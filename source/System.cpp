@@ -830,6 +830,8 @@ void System::LoadObject(const DataNode &node, Set<Planet> &planets, int parent)
 				object.isMoon = (!object.isStation && parent >= 0 && !objects[parent].IsStar());
 			}
 		}
+		else if(child.Token(0) == "normals" && child.Size() >= 2)
+			object.LoadNormals(child);
 		else if(child.Token(0) == "distance" && child.Size() >= 2)
 			object.distance = child.Value(1);
 		else if(child.Token(0) == "period" && child.Size() >= 2)

@@ -32,7 +32,10 @@ Body::Body(const Sprite *sprite, Point position, Point velocity, Angle facing, d
 {
 }
 
-
+Body::Body(const Sprite *sprite, const Sprite *normals, Point position, Point velocity, Angle facing, double zoom)
+	: position(position), velocity(velocity), angle(facing), zoom(zoom), sprite(sprite), normals(normals), randomize(true)
+{
+}
 
 // Constructor, based on the animation from another Body object.
 Body::Body(const Body &sprite, Point position, Point velocity, Angle facing, double zoom)
@@ -52,6 +55,10 @@ bool Body::HasSprite() const
 	return (sprite && sprite->Frames());
 }
 
+bool Body::HasNormals() const
+{
+	return (normals && normals->Frames());
+}
 
 
 // Access the underlying Sprite object.
@@ -60,6 +67,10 @@ const Sprite *Body::GetSprite() const
 	return sprite;
 }
 
+const Sprite *Body::GetNormals() const
+{
+	return normals;
+}
 
 
 // Get the width of this object, in world coordinates (i.e. taking zoom into account).
@@ -215,7 +226,12 @@ void Body::LoadSprite(const DataNode &node)
 	}
 }
 
-
+void Body::LoadNormals(const DataNode &node)
+{
+	if(node.Size() < 2)
+		return;
+	normals = SpriteSet::Get(node.Token(1));
+}
 
 // Save the sprite specification, including all animation attributes.
 void Body::SaveSprite(DataWriter &out, const string &tag) const
@@ -240,7 +256,13 @@ void Body::SaveSprite(DataWriter &out, const string &tag) const
 	out.EndChild();
 }
 
-
+void Body::SaveNormals(DataWriter &out, const string &tag) const
+{
+        if(!normals)
+		return;
+	
+	out.Write(tag, normals->Name());
+}
 
 // Set the sprite.
 void Body::SetSprite(const Sprite *sprite)
@@ -249,6 +271,11 @@ void Body::SetSprite(const Sprite *sprite)
 	currentStep = -1;
 }
 
+void Body::SetNormals(const Sprite *n)
+{
+	this->normals = n;
+	currentStep = -1;
+}
 
 
 // Set the color swizzle.

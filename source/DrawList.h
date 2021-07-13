@@ -13,6 +13,7 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #ifndef DRAW_LIST_H_
 #define DRAW_LIST_H_
 
+#include "Color.h"
 #include "Point.h"
 #include "SpriteShader.h"
 
@@ -47,6 +48,7 @@ public:
 	// Draw all the items in this list.
 	void Draw() const;
 	
+	bool AddLight(const Body &body, Color color = Color());
 	
 private:
 	// Determine if the given object should be drawn at all.
@@ -60,6 +62,7 @@ private:
 	double zoom = 1.;
 	bool isHighDPI = false;
 	std::vector<SpriteShader::Item> items;
+	std::vector<SpriteShader::Light> lights;
 	
 	Point center;
 	Point centerVelocity;

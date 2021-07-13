@@ -34,12 +34,15 @@ public:
 	// Constructors.
 	Body() = default;
 	Body(const Sprite *sprite, Point position, Point velocity = Point(), Angle facing = Angle(), double zoom = 1.);
+	Body(const Sprite *sprite, const Sprite *normals, Point position, Point velocity = Point(), Angle facing = Angle(), double zoom = 1.);
 	Body(const Body &sprite, Point position, Point velocity = Point(), Angle facing = Angle(), double zoom = 1.);
 	
 	// Check that this Body has a sprite and that the sprite has at least one frame.
 	bool HasSprite() const;
+        bool HasNormals() const;
 	// Access the underlying Sprite object.
 	const Sprite *GetSprite() const;
+        const Sprite *GetNormals() const;
 	// Get the dimensions of the sprite.
 	double Width() const;
 	double Height() const;
@@ -67,9 +70,12 @@ public:
 	
 	// Sprite serialization.
 	void LoadSprite(const DataNode &node);
+        void LoadNormals(const DataNode &node);
 	void SaveSprite(DataWriter &out, const std::string &tag = "sprite") const;
+	void SaveNormals(DataWriter &out, const std::string &tag = "normals") const;
 	// Set the sprite.
 	void SetSprite(const Sprite *sprite);
+        void SetNormals(const Sprite *n);
 	// Set the color swizzle.
 	void SetSwizzle(int swizzle);
 	
@@ -107,6 +113,7 @@ private:
 private:
 	// Animation parameters.
 	const Sprite *sprite = nullptr;
+        const Sprite *normals = nullptr;
 	// Allow objects based on this one to adjust their frame rate and swizzle.
 	int swizzle = 0;
 	

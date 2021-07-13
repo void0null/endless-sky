@@ -29,6 +29,7 @@ using namespace std;
 void DrawList::Clear(int step, double zoom)
 {
 	items.clear();
+	lights.clear();
 	this->step = step;
 	this->zoom = zoom;
 	isHighDPI = (Screen::IsHighResolution() ? zoom > .5 : zoom > 1.);
@@ -101,6 +102,7 @@ bool DrawList::AddSwizzled(const Body &body, int swizzle)
 void DrawList::Draw() const
 {
 	SpriteShader::Bind();
+	SpriteShader::BindLights(lights);
 	
 	bool withBlur = Preferences::Has("Render motion blur");
 	for(const SpriteShader::Item &item : items)
@@ -139,7 +141,14 @@ void DrawList::Push(const Body &body, Point pos, Point blur, double cloak, doubl
 	SpriteShader::Item item;
 	
 	item.texture = body.GetSprite()->Texture(isHighDPI);
-	item.frame = body.GetFrame(step);
+        
+        if(body.HasNormals()) {
+            item.normals = body.GetNormals()->Texture(isHighDPI);
+	} else {
+            item.normals = 0;
+        }
+        
+        item.frame = body.GetFrame(step);
 	item.frameCount = body.GetSprite()->Frames();
 	
 	// Get unit vectors in the direction of the object's width and height.
@@ -177,4 +186,22 @@ void DrawList::Push(const Body &body, Point pos, Point blur, double cloak, doubl
 	item.swizzle = swizzle;
 	
 	items.push_back(item);
+}
+
+bool DrawList::AddLight(const Body &body, Color color) 
+{
+	Point position = body.Position() - center;
+	SpriteShader::Light light;
+
+	light.position[0] = static_cast<float>(position.X() * zoom);
+	light.position[1] = static_cast<float>(position.Y() * zoom);
+
+	const float *c = color.Get();
+	light.color[0] = static_cast<float>(c[0]);
+	light.color[1] = static_cast<float>(c[1]);
+	light.color[2] = static_cast<float>(c[2]);
+
+	lights.push_back(light);
+
+	return true;
 }

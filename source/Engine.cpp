@@ -1411,6 +1411,12 @@ void Engine::CalculateStep()
 	batchDraw[calcTickTock].SetCenter(newCenter);
 	radar[calcTickTock].SetCenter(newCenter);
 	
+	//Find Light Sources/Suns
+	for(const StellarObject &object : playerSystem->Objects())
+		if(object.IsStar())
+		{
+			draw[calcTickTock].AddLight(object);
+		}
 	// Populate the radar.
 	FillRadar();
 	
