@@ -1416,7 +1416,7 @@ void Engine::CalculateStep()
 	for(const StellarObject &object : playerSystem->Objects())
 		if(object.IsStar())
 		{
-			draw[calcTickTock].AddLight(object);
+			draw[calcTickTock].AddLight(object, object.GetLightColor());
 		}
 	// Populate the radar.
 	FillRadar();

@@ -188,7 +188,7 @@ void DrawList::Push(const Body &body, Point pos, Point blur, double cloak, doubl
 	items.push_back(item);
 }
 
-bool DrawList::AddLight(const Body &body, Color color) 
+bool DrawList::AddLight(const Body &body, const Color *color) 
 {
 	Point position = body.Position() - center;
 	SpriteShader::Light light;
@@ -196,10 +196,19 @@ bool DrawList::AddLight(const Body &body, Color color)
 	light.position[0] = static_cast<float>(position.X() * zoom);
 	light.position[1] = static_cast<float>(position.Y() * zoom);
 
-	const float *c = color.Get();
-	light.color[0] = static_cast<float>(c[0]);
-	light.color[1] = static_cast<float>(c[1]);
-	light.color[2] = static_cast<float>(c[2]);
+	if(color != nullptr) 
+	{
+		const float *c = color->Get();
+		light.color[0] = static_cast<float>(c[0]);
+		light.color[1] = static_cast<float>(c[1]);
+		light.color[2] = static_cast<float>(c[2]);
+	}
+	else
+	{
+		light.color[0] = 0.5f;
+		light.color[1] = 0.5f;
+		light.color[2] = 0.5f;
+	}
 
 	lights.push_back(light);
 

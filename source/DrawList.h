@@ -48,7 +48,7 @@ public:
 	// Draw all the items in this list.
 	void Draw() const;
 	
-	bool AddLight(const Body &body, Color color = Color());
+	bool AddLight(const Body &body, const Color *color);
 	
 private:
 	// Determine if the given object should be drawn at all.

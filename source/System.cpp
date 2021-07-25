@@ -23,6 +23,7 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #include "Planet.h"
 #include "Random.h"
 #include "SpriteSet.h"
+#include "Color.h"
 
 #include <algorithm>
 #include <cmath>
@@ -832,6 +833,24 @@ void System::LoadObject(const DataNode &node, Set<Planet> &planets, int parent)
 		}
 		else if(child.Token(0) == "normals" && child.Size() >= 2)
 			object.LoadNormals(child);
+		else if(child.Token(0) == "light" && child.Size() >= 2)
+		{
+			if(child.Size() == 2) 
+			{
+				Color c = Color(static_cast<float>(child.Value(1)));
+				object.light = &c;
+			}
+			else if(child.Size() == 3)
+			{
+				Color c = Color(static_cast<float>(child.Value(1)), static_cast<float>(child.Value(2)));
+				object.light = &c;
+			}
+			else if(child.Size() == 4)
+			{
+				Color c = Color(static_cast<float>(child.Value(1)), static_cast<float>(child.Value(2)), static_cast<float>(child.Value(3)));
+				object.light = &c;
+			}
+		}
 		else if(child.Token(0) == "distance" && child.Size() >= 2)
 			object.distance = child.Value(1);
 		else if(child.Token(0) == "period" && child.Size() >= 2)

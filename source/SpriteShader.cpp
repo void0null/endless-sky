@@ -182,18 +182,32 @@ void SpriteShader::Init(bool useShaderSwizzle)
 		"  \n"
 		"  if(numLights > 0 && useNormals > 0)\n"
 		"  {\n"
-		"    normal = normalize(vec4(transform*(2.*normal.xy-1.), normal.z, 0.));\n"
+		"    float shininess = 256.;\n"
+		"    light = vec3(0.1, 0.1, 0.1);\n"
 		"    \n"
-		"    vec2 surfaceToLight = normalize(light1pos - fragPos);\n"
-		"    float brightness = clamp(dot(normal.xyz, vec3(surfaceToLight, -1.)), 0, 1);\n"
-		"    light = brightness*light1color;\n"
-		"  }\n"
-		"  \n"
-		"  if(numLights > 1 && useNormals > 0)\n"
-		"  {\n"
-		"    vec2 surfaceToLight = normalize(light2pos - fragPos);\n"
-		"    float brightness = clamp(dot(normal.xyz, vec3(surfaceToLight, -1.)), 0, 1);\n"
-		"    light += brightness*light2color;\n"
+		"    normal.x = 2.*normal.x-1.;\n"
+		"    normal.y = 1.-2.*normal.y;\n"
+		"    normal = normalize(vec4(transform*normal.xy, (2*normal.z-1), 0.));\n"
+		"    \n"
+		"    vec3 surfaceToLight = normalize(vec3(light1pos - fragPos, 1.));\n"
+		"    float brightness = clamp(dot(normal.xyz, surfaceToLight), 0, 1);\n"
+		"    light += brightness*light1color;\n"
+		"    \n"
+		"    vec3 surfaceToView = normalize(vec3(-fragPos, 1.));\n"
+		"    vec3 halfwayDir = normalize(surfaceToLight + surfaceToView);\n"
+		"    float specular = pow(clamp(dot(normal.xyz, halfwayDir), 0, 1), shininess);\n"
+		"    light += specular*light1color;\n"
+		"    \n"
+		"    if(numLights > 1)\n"
+		"    {\n"
+		"      surfaceToLight = normalize(vec3(light2pos - fragPos, 1.));\n"
+		"      brightness = clamp(dot(normal.xyz, surfaceToLight), 0, 1);\n"
+		"      light += brightness*light2color;\n"
+		"      \n"
+		"      halfwayDir = normalize(surfaceToLight + surfaceToView);\n"
+		"      specular = pow(clamp(dot(normal.xyz, halfwayDir), 0, 1), shininess);\n"
+		"      light += specular*light2color;\n"
+		"    }\n"
 		"  }\n";
 	
 	// Only included when hardware swizzle not supported, GL <3.3 and GLES
@@ -383,14 +397,16 @@ void SpriteShader::BindLights(std::vector<SpriteShader::Light> lights)
 {
 	if(lights.size() > 0)
 	{
-		glUniform2fv(light1posI, 1, lights[0].position);
+		GLfloat pos[2] = {lights[0].position[0] * 2.f / Screen::Width(), lights[0].position[1] * 2.f / Screen::Height()};
+		glUniform2fv(light1posI, 1, pos);
 		glUniform3fv(light1colorI, 1, lights[0].color);
 		glUniform1i(numLightsI, 1);
 	}
 	if(lights.size() > 1)
 	{
-		glUniform2fv(light2posI, 1, lights[0].position);
-		glUniform3fv(light2colorI, 1, lights[0].color);
+		GLfloat pos[2] = {lights[1].position[0] * 2.f / Screen::Width(), lights[1].position[1] * 2.f / Screen::Height()};
+		glUniform2fv(light2posI, 1, pos);
+		glUniform3fv(light2colorI, 1, lights[1].color);
 		glUniform1i(numLightsI, 2);
 	}
 }

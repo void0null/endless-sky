@@ -149,3 +149,10 @@ double StellarObject::Distance() const
 {
 	return distance;
 }
+
+
+// Get the light color of this star
+const Color *StellarObject::GetLightColor() const
+{
+	return light;
+}

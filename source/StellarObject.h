@@ -14,6 +14,7 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #define STELLAR_OBJECT_H_
 
 #include "Body.h"
+#include "Color.h"
 
 class Planet;
 class Ship;
@@ -66,7 +67,8 @@ public:
 	int Parent() const;
 	// Find out how far this object is from its parent.
 	double Distance() const;
-	
+	// Get the light color of this star
+	const Color *GetLightColor() const;
 	
 private:
 	const Planet *planet;
@@ -80,6 +82,8 @@ private:
 	bool isStar;
 	bool isStation;
 	bool isMoon;
+	
+	const Color *light = nullptr;
 	
 	// Let System handle setting all the values of an Object.
 	friend class System;
